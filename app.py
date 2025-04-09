@@ -16,8 +16,8 @@ creds = service_account.Credentials.from_service_account_info(
 client_gsheets = gspread.authorize(creds)
 
 # ✅ Open sheet by key instead of by name
-SHEET_ID = "1A2b3C4D5e6FG7H8IjKL9MnOpQ"  # Replace with your actual ID
-sheet = client_gsheets.open_by_key(1A2b3C4D5e6FG7H8IjKL9MnOpQ)
+SHEET_ID = "your_actual_sheet_id_here"  # Replace this with your sheet's ID
+sheet = client_gsheets.open_by_key(1_udeJGkY6jpKibc0J9Z6LfSX33v86xYurme9yGgIFno).sheet1
 
 from openai import OpenAI
 
