@@ -3,11 +3,22 @@ import openai
 import pandas as pd
 import gspread
 from google.oauth2 import service_account
-scope = ["https://www.googleapis.com/auth/spreadsheets"]
+
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+
 creds = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"],
     scopes=scope
 )
+
+client_gsheets = gspread.authorize(creds)
+
+# This now works:
+sheet = client_gsheets.open("Chatbot Responses").sheet1
+
 
 client_gsheets = gspread.authorize(creds)
 sheet = client_gsheets.open("Chatbot Responses").sheet1
