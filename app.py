@@ -83,6 +83,10 @@ Provide specific, constructive feedback.
 st.markdown("---")
 st.subheader("👩‍🏫 Teacher Panel (Password Protected)")
 
+# Divider
+st.markdown("---")
+st.subheader("👩‍🏫 Teacher Panel (Password Protected)")
+
 # Password input (hidden text)
 with st.expander("🔐 Enter Teacher Password"):
     pw_input = st.text_input("Password", type="password")
