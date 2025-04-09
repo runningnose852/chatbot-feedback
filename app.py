@@ -1,45 +1,44 @@
 import streamlit as st
 import openai
-import os
 import pandas as pd
-from dotenv import load_dotenv
-from openai import OpenAI
+import gspread
 from google.oauth2 import service_account
+from openai import OpenAI
 
-creds = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=["https://www.googleapis.com/auth/spreadsheets"]
-)
-
-
-load_dotenv()
+# === Configuration ===
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI()
 
+# Google Sheets credentials from Streamlit Secrets
+scope = ["https://www.googleapis.com/auth/spreadsheets"]
+creds = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"], scopes=scope
+)
+client_gsheets = gspread.authorize(creds)
+sheet = client_gsheets.open("Chatbot Responses").sheet1  # Update to your actual sheet name
+
+# === Load Rubric from File ===
 with open("rubric.txt", "r", encoding="utf-8") as f:
     rubric_text = f.read()
 
+# === Streamlit UI Setup ===
+st.set_page_config(page_title="📚 In-Class Feedback Chatbot")
+st.title("📚 In-Class Feedback Chatbot")
+
+# === Session State ===
 if "answers" not in st.session_state:
     st.session_state.answers = []
 
-if "results" not in st.session_state:
-    st.session_state.results = []
-
-st.set_page_config(page_title="📚 In-Class Chatbot with Rubric + CSV")
-
-st.title("📚 In-Class Chatbot with Rubric-Based Feedback")
-
-
-# Student form
+# === Student Submission Form ===
 with st.form("submission_form"):
     name = st.text_input("Your Name")
     student_answer = st.text_area("Your Answer")
     submitted = st.form_submit_button("Submit")
 
     if submitted and name and student_answer:
-        # Generate feedback immediately
+        # Generate feedback
         prompt = f"""
-You are an assistant teacher. Evaluate the following student answer using the rubric and model answer below.
+You are an assistant teacher. Evaluate the student's answer based on the rubric below.
 
 Rubric:
 {rubric_text}
@@ -53,34 +52,30 @@ Provide specific, constructive feedback.
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}]
         )
-
         feedback = response.choices[0].message.content
 
-        # Save and display feedback
+        # Show feedback to student
         st.success("✅ Your answer has been submitted!")
         st.markdown("### 💬 Feedback")
         st.markdown(feedback)
 
-        # Optional: store it in session or write to file/Google Sheet
+        # Save to session
         st.session_state.answers.append({
             "Name": name,
             "Answer": student_answer,
             "Feedback": feedback
         })
 
+        # Save to Google Sheet
+        sheet.append_row([name, student_answer, feedback])
 
-st.success("✅ Feedback generated for all students!")
+# === Teacher View (Hidden Table & Download) ===
+st.markdown("---")
+st.subheader("👩‍🏫 Teacher Panel – Review All Responses")
 
-# Show and download results
-if st.session_state.results:
-    df = pd.DataFrame(st.session_state.results)
+if st.session_state.answers:
+    df = pd.DataFrame(st.session_state.answers)
     st.dataframe(df)
 
     csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button("⬇️ Download Feedback as CSV", csv, "student_feedback.csv", "text/csv")
-
-# Clear all
-if st.button("Clear All Data"):
-    st.session_state.answers = []
-    st.session_state.results = []
-    st.success("Session cleared.")
+    st.download_button("⬇️ Download All Feedback", csv, "student_feedback.csv", "text/csv")
