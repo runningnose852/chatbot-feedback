@@ -16,7 +16,17 @@ creds = service_account.Credentials.from_service_account_info(
     scopes=["https://www.googleapis.com/auth/spreadsheets"]
 )
 client_gsheets = gspread.authorize(creds)
-sheet = client_gsheets.open("Chatbot Responses").sheet1
+try:
+    sheet = client_gsheets.open("Chatbot Responses").sheet1
+except Exception as e:
+    st.error(\"❌ Google Sheets access failed. Please confirm:
+    - Sheet name is exactly: 'Chatbot Responses'
+    - It is shared with the service account
+    - Your credentials are correct
+
+    Error:\n\n\" + str(e))
+    st.stop()
+
 
 # === Load Rubric from File ===
 with open("rubric.txt", "r", encoding="utf-8") as f:
@@ -77,11 +87,3 @@ st.subheader("👩‍🏫 Teacher Panel – Review All Responses")
 if st.session_state.answers:
     df = pd.DataFrame(st.session_state.answers)
     st.dataframe(df)
-try:
-    sheet = client_gsheets.open("Chatbot Responses").sheet1
-except Exception as e:
-    st.error(f"⚠️ Google Sheet error: {e}")
-
-
-    csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button("⬇️ Download All Feedback", csv, "student_feedback.csv", "text/csv")
