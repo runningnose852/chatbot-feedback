@@ -84,9 +84,11 @@ st.markdown("---")
 st.subheader("👩‍🏫 Teacher Panel (Password Protected)")
 
 # Password input (hidden text)
+teacher_pw = st.secrets.get("TEACHER_PASSWORD", None)
+
 with st.expander("🔐 Enter Teacher Password"):
     pw_input = st.text_input("Password", type="password")
-    if pw_input == st.secrets["TEACHER_PASSWORD"]:  # store in Streamlit secrets
+    if pw_input and teacher_pw and pw_input == teacher_pw:
         st.success("🔓 Access granted. Viewing teacher panel.")
 
         if st.session_state.answers:
