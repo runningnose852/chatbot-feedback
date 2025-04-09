@@ -4,52 +4,27 @@ import pandas as pd
 import gspread
 from google.oauth2 import service_account
 
+# Setup authorized client
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
-
 creds = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"],
     scopes=scope
 )
-
 client_gsheets = gspread.authorize(creds)
 
-# This now works:
-sheet = client_gsheets.open("Chatbot Responses").sheet1
-
-
-client_gsheets = gspread.authorize(creds)
-sheet = client_gsheets.open("Chatbot Responses").sheet1
+# ✅ Open sheet by key instead of by name
+SHEET_ID = "1A2b3C4D5e6FG7H8IjKL9MnOpQ"  # Replace with your actual ID
+sheet = client_gsheets.open_by_key(1A2b3C4D5e6FG7H8IjKL9MnOpQ
+).sheet1
 
 from openai import OpenAI
 
 # === Configuration ===
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI()
-
-# Google Sheets credentials from Streamlit Secrets
-scope = ["https://www.googleapis.com/auth/spreadsheets"]
-creds = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"],
-    scopes=["https://www.googleapis.com/auth/spreadsheets"]
-)
-client_gsheets = gspread.authorize(creds)
-try:
-    sheet = client_gsheets.open("Chatbot Responses").sheet1
-except Exception as e:
-    st.error(
-        "❌ Google Sheets access failed.\n\n"
-        "Please confirm:\n"
-        "- The sheet name is exactly 'Chatbot Responses'\n"
-        "- The sheet is shared with your service account\n"
-        "- Your Google credentials are formatted correctly in secrets\n\n"
-        f"🔍 Error: {e}"
-    )
-    st.stop()
-
-
 
 # === Load Rubric from File ===
 with open("rubric.txt", "r", encoding="utf-8") as f:
