@@ -79,9 +79,21 @@ Provide specific, constructive feedback.
         sheet.append_row([name, student_answer, feedback])
 
 # === Teacher View (Hidden Table & Download) ===
+# Divider
 st.markdown("---")
-st.subheader("👩‍🏫 Teacher Panel – Review All Responses")
+st.subheader("👩‍🏫 Teacher Panel (Password Protected)")
 
-if st.session_state.answers:
-    df = pd.DataFrame(st.session_state.answers)
-    st.dataframe(df)
+# Password input (hidden text)
+with st.expander("🔐 Enter Teacher Password"):
+    pw_input = st.text_input("Password", type="password")
+    if pw_input == st.secrets["TEACHER_PASSWORD"]:  # store in Streamlit secrets
+        st.success("🔓 Access granted. Viewing teacher panel.")
+
+        if st.session_state.answers:
+            df = pd.DataFrame(st.session_state.answers)
+            st.dataframe(df)
+
+            csv = df.to_csv(index=False).encode("utf-8")
+            st.download_button("⬇️ Download All Feedback", csv, "student_feedback.csv", "text/csv")
+    elif pw_input:
+        st.error("❌ Incorrect password.")
