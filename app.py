@@ -52,20 +52,18 @@ if st.button("Generate Feedback for All"):
         st.warning("No student answers submitted.")
     else:
         st.session_state.results = []  # clear previous
-        for item in st.session_state.answers:
+       # ✅ Correct
+for item in st.session_state.answers:
     name = item["name"]
     student_answer = item["answer"]
 
     prompt = f"""
-You are an assistant teacher. Your task is to evaluate a student's answer based on a provided rubric and model answer.
-
-📋 Rubric & Model Answer:
+You are an assistant teacher...
+Rubric:
 {rubric_text}
 
-🧑 Student's Answer:
+Answer:
 {student_answer}
-
-✅ Please assess the answer according to the rubric and provide clear, constructive feedback. Mention if the answer is accurate, well-structured, and includes appropriate examples.
 """
 
     response = client.chat.completions.create(
@@ -75,12 +73,15 @@ You are an assistant teacher. Your task is to evaluate a student's answer based 
 
     feedback = response.choices[0].message.content
 
-            # Save result
-            st.session_state.results.append({
-                "Name": name,
-                "Answer": student_answer,
-                "Feedback": feedback
-            })
+    # Store result
+    st.session_state.results.append({
+        "Name": name,
+        "Answer": student_answer,
+        "Feedback": feedback
+    })
+
+
+  
 
         st.success("✅ Feedback generated for all students!")
 
