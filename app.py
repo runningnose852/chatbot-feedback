@@ -4,9 +4,18 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 from openai import OpenAI
+from google.oauth2 import service_account
+
+creds = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"],
+    scopes=["https://www.googleapis.com/auth/spreadsheets"]
+)
+
 
 load_dotenv()
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI()
+
 
 if "answers" not in st.session_state:
     st.session_state.answers = []
