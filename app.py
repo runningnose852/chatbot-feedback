@@ -16,6 +16,8 @@ load_dotenv()
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI()
 
+with open("rubric.txt", "r", encoding="utf-8") as f:
+    rubric_text = f.read()
 
 if "answers" not in st.session_state:
     st.session_state.answers = []
@@ -27,13 +29,6 @@ st.set_page_config(page_title="📚 In-Class Chatbot with Rubric + CSV")
 
 st.title("📚 In-Class Chatbot with Rubric-Based Feedback")
 
-# Upload rubric file
-uploaded_rubric = st.file_uploader("Upload rubric or model answer (.txt)", type="txt")
-
-rubric_text = ""
-if uploaded_rubric:
-    rubric_text = uploaded_rubric.read().decode("utf-8")
-    st.info("✅ Rubric/model answer loaded successfully.")
 
 # Student form
 with st.form("submission_form"):
@@ -58,26 +53,27 @@ if st.button("Generate Feedback for All"):
     else:
         st.session_state.results = []  # clear previous
         for item in st.session_state.answers:
-            name = item["name"]
-            student_answer = item["answer"]
+    name = item["name"]
+    student_answer = item["answer"]
 
-            prompt = f"""
-You are an assistant teacher evaluating student work. Use the following rubric to assess the student's answer.
+    prompt = f"""
+You are an assistant teacher. Your task is to evaluate a student's answer based on a provided rubric and model answer.
 
-Rubric:
+📋 Rubric & Model Answer:
 {rubric_text}
 
-Student's Answer:
+🧑 Student's Answer:
 {student_answer}
 
-Based on the rubric, provide specific, constructive feedback:
+✅ Please assess the answer according to the rubric and provide clear, constructive feedback. Mention if the answer is accurate, well-structured, and includes appropriate examples.
 """
 
-            response = client.chat.completions.create(
-                model="gpt-4",
-                messages=[{"role": "user", "content": prompt}]
-            )
-            feedback = response.choices[0].message.content
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    feedback = response.choices[0].message.content
 
             # Save result
             st.session_state.results.append({
