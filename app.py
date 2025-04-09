@@ -80,10 +80,7 @@ Answer:
         "Feedback": feedback
     })
 
-
-  
-
-        st.success("✅ Feedback generated for all students!")
+st.success("✅ Feedback generated for all students!")
 
 # Show and download results
 if st.session_state.results:
