@@ -35,50 +35,39 @@ with st.form("submission_form"):
     name = st.text_input("Your Name")
     student_answer = st.text_area("Your Answer")
     submitted = st.form_submit_button("Submit")
-    if submitted:
-        if not rubric_text:
-            st.warning("Please upload a rubric first.")
-        elif name and student_answer:
-            st.session_state.answers.append({"name": name, "answer": student_answer})
-            st.success("Answer submitted!")
 
-st.markdown("---")
-st.subheader("👩‍🏫 Teacher Feedback Panel")
+    if submitted and name and student_answer:
+        # Generate feedback immediately
+        prompt = f"""
+You are an assistant teacher. Evaluate the following student answer using the rubric and model answer below.
 
-if st.button("Generate Feedback for All"):
-    if not rubric_text:
-        st.warning("Please upload a rubric first.")
-    elif not st.session_state.answers:
-        st.warning("No student answers submitted.")
-    else:
-        st.session_state.results = []  # clear previous
-       # ✅ Correct
-for item in st.session_state.answers:
-    name = item["name"]
-    student_answer = item["answer"]
-
-    prompt = f"""
-You are an assistant teacher...
 Rubric:
 {rubric_text}
 
-Answer:
+Student Answer:
 {student_answer}
+
+Provide specific, constructive feedback.
 """
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}]
+        )
 
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}]
-    )
+        feedback = response.choices[0].message.content
 
-    feedback = response.choices[0].message.content
+        # Save and display feedback
+        st.success("✅ Your answer has been submitted!")
+        st.markdown("### 💬 Feedback")
+        st.markdown(feedback)
 
-    # Store result
-    st.session_state.results.append({
-        "Name": name,
-        "Answer": student_answer,
-        "Feedback": feedback
-    })
+        # Optional: store it in session or write to file/Google Sheet
+        st.session_state.answers.append({
+            "Name": name,
+            "Answer": student_answer,
+            "Feedback": feedback
+        })
+
 
 st.success("✅ Feedback generated for all students!")
 
