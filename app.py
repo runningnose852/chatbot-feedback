@@ -12,10 +12,11 @@ client = OpenAI()
 # Google Sheets credentials from Streamlit Secrets
 scope = ["https://www.googleapis.com/auth/spreadsheets"]
 creds = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"], scopes=scope
+    st.secrets["gcp_service_account"],
+    scopes=["https://www.googleapis.com/auth/spreadsheets"]
 )
 client_gsheets = gspread.authorize(creds)
-sheet = client_gsheets.open("Chatbot Responses").sheet1  # Update to your actual sheet name
+sheet = client_gsheets.open("Chatbot Responses").sheet1
 
 # === Load Rubric from File ===
 with open("rubric.txt", "r", encoding="utf-8") as f:
@@ -76,6 +77,11 @@ st.subheader("👩‍🏫 Teacher Panel – Review All Responses")
 if st.session_state.answers:
     df = pd.DataFrame(st.session_state.answers)
     st.dataframe(df)
+try:
+    sheet = client_gsheets.open("Chatbot Responses").sheet1
+except Exception as e:
+    st.error(f"⚠️ Google Sheet error: {e}")
+
 
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button("⬇️ Download All Feedback", csv, "student_feedback.csv", "text/csv")
