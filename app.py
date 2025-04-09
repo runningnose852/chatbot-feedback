@@ -19,13 +19,16 @@ client_gsheets = gspread.authorize(creds)
 try:
     sheet = client_gsheets.open("Chatbot Responses").sheet1
 except Exception as e:
-    st.error("❌ Google Sheets access failed. Please confirm:
-    - Sheet name is exactly: 'Chatbot Responses'
-    - It is shared with the service account
-    - Your credentials are correct
-
-    Error:\n\n\" + str(e))
+    st.error(
+        "❌ Google Sheets access failed.\n\n"
+        "Please confirm:\n"
+        "- The sheet name is exactly 'Chatbot Responses'\n"
+        "- The sheet is shared with your service account\n"
+        "- Your Google credentials are formatted correctly in secrets\n\n"
+        f"🔍 Error: {e}"
+    )
     st.stop()
+
 
 
 # === Load Rubric from File ===
