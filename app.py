@@ -19,7 +19,7 @@ client_gsheets = gspread.authorize(creds)
 try:
     sheet = client_gsheets.open("Chatbot Responses").sheet1
 except Exception as e:
-    st.error(\"❌ Google Sheets access failed. Please confirm:
+    st.error("❌ Google Sheets access failed. Please confirm:
     - Sheet name is exactly: 'Chatbot Responses'
     - It is shared with the service account
     - Your credentials are correct
