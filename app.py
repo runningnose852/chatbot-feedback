@@ -41,6 +41,7 @@ if "answers" not in st.session_state:
 # === Student Submission Form ===
 with st.form("submission_form"):
     name = st.text_input("Your Name")
+    topic= st.text_input("Topic")
     student_answer = st.text_area("Your Answer")
     submitted = st.form_submit_button("Submit")
     
