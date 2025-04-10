@@ -43,7 +43,9 @@ with st.form("submission_form"):
     name = st.text_input("Your Name")
     student_answer = st.text_area("Your Answer")
     submitted = st.form_submit_button("Submit")
-    word_count = len(student_answer.split())
+    
+
+word_count = len(student_answer.split())
 max_words = 500  # Set your desired limit
 # Display word count
 st.caption(f"Word count: {word_count}/{max_words}")
@@ -55,8 +57,8 @@ if submitted:
         # Process submission if within word limit
         # Your existing code here...    
 
+
 if submitted and name and student_answer:
-        
         # Generate feedback
         prompt = f"""
 You are an assistant teacher helping a student improve their formal argumentative essay.. Evaluate the student's answer based on the rubric below.
