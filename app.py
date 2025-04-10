@@ -109,7 +109,8 @@ Suggest ways to improve, Be kind, supportive, and specific. Use direct quotes fr
         feedback = response.choices[0].message.content
     
     # Show feedback to student (outside the spinner)
-                st.success("✅ Your answer has been submitted!")
+         if submitted and name and student_answer:
+            st.success("✅ Your answer has been submitted!")
             st.markdown("### 💬 Feedback")
             st.markdown(feedback)
             
