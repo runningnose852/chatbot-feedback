@@ -84,23 +84,16 @@ st.markdown("---")
 st.subheader("👩‍🏫 Teacher Panel (Password Protected)")
 
 # Password input (hidden text)
-teacher_pw = st.secrets.get("TEACHER_PASSWORD", None)
-
-with st.expander("🔐 Enter Teacher Password"):
-    pw_input = st.text_input("Password", type="password")
-
-    if pw_input and teacher_pw:
-        if pw_input == teacher_pw:
-            st.success("🔓 Access granted. Viewing teacher panel.")
-
-            if st.session_state.answers:
-                df = pd.DataFrame(st.session_state.answers)
-                st.dataframe(df)
-
-                csv = df.to_csv(index=False).encode("utf-8")
-                st.download_button("⬇️ Download All Feedback", csv, "student_feedback.csv", "text/csv")
-        else:
-            st.error(f"❌ Incorrect password. You entered: {pw_input}")
-    elif pw_input and not teacher_pw:
-        st.error("⚠️ TEACHER_PASSWORD secret not found in Streamlit.")
-
+# More reliable password checking
+teacher_password = st.secrets.get("TEACHER_PASSWORD")
+if teacher_password is None:
+    st.error("⚠️ TEACHER_PASSWORD not configured in Streamlit secrets")
+else:
+    with st.expander("🔐 Enter Teacher Password"):
+        pw_input = st.text_input("Password", type="password")
+        if pw_input:
+            if pw_input == teacher_password:
+                st.success("🔓 Access granted. Viewing teacher panel.")
+                # Show teacher content here
+            else:
+                st.error("❌ Incorrect password")
