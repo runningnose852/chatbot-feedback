@@ -43,8 +43,20 @@ with st.form("submission_form"):
     name = st.text_input("Your Name")
     student_answer = st.text_area("Your Answer")
     submitted = st.form_submit_button("Submit")
+    word_count = len(student_answer.split())
+max_words = 500  # Set your desired limit
+# Display word count
+st.caption(f"Word count: {word_count}/{max_words}")
+# Check word limit during submission
+if submitted:
+    if word_count > max_words:
+        st.error(f"Please limit your answer to {max_words} words. Current count: {word_count}")
+    elif name and student_answer:
+        # Process submission if within word limit
+        # Your existing code here...    
 
-    if submitted and name and student_answer:
+if submitted and name and student_answer:
+        
         # Generate feedback
         prompt = f"""
 You are an assistant teacher helping a student improve their formal argumentative essay.. Evaluate the student's answer based on the rubric below.
@@ -74,10 +86,16 @@ Suggest ways to improve, Be kind, supportive, and specific. Use direct quotes fr
             "Answer": student_answer,
             "Feedback": feedback
         })
-
+    # Add a spinner for the Google Sheets operation too
+    with st.spinner('Saving your submission...'):
+        sheet.append_row([name, student_answer, feedback])
         # Save to Google Sheet
         sheet.append_row([name, student_answer, feedback])
-
+# After successful submission
+st.success("✅ Your answer has been submitted!")
+st.balloons()  # Shows a cute balloon animation
+st.markdown("### 💬 Feedback")
+st.markdown(feedback)
 # === Teacher View (Hidden Table & Download) ===
 st.markdown("---")
 st.subheader("👩‍🏫 Teacher Panel (Password Protected)")
