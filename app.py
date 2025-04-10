@@ -91,9 +91,37 @@ Suggest ways to improve, Be kind, supportive, and specific. Use direct quotes fr
             "Feedback": feedback
         })
     # Add a spinner for the Google Sheets operation too
+if submitted and name and student_answer:
+    # Display a spinner while generating feedback
+     with st.spinner('Generating personalized feedback... Please wait.'):
+        prompt = f"""
+You are an assistant teacher helping a student improve their formal argumentative essay.. Evaluate the student's answer based on the rubric below.
+Rubric:
+{rubric_text}
+Student Answer:
+{student_answer}
+Suggest ways to improve, Be kind, supportive, and specific. Use direct quotes from the essay where possible, and include improved versions.
+"""
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        feedback = response.choices[0].message.content
+    
+    # Show feedback to student (outside the spinner)
+    st.success("✅ Your answer has been submitted!")
+    st.markdown("### 💬 Feedback")
+    st.markdown(feedback)
+    
+    # Save to session and Google Sheet
+    st.session_state.answers.append({
+        "Name": name,
+        "Answer": student_answer,
+        "Feedback": feedback
+    })
+    
+    # Add a spinner for the Google Sheets operation too
     with st.spinner('Saving your submission...'):
-        sheet.append_row([name, student_answer, feedback])
-        # Save to Google Sheet
         sheet.append_row([name, student_answer, feedback])
 # After successful submission
 st.success("✅ Your answer has been submitted!")
