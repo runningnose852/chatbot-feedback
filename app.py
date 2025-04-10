@@ -53,7 +53,7 @@ st.caption(f"Word count: {word_count}/{max_words}")
 if submitted:
     if word_count > max_words:
         st.error(f"Please limit your answer to {max_words} words. Current count: {word_count}")
-   elif pw_input and not teacher_pw:
+elif pw_input and not teacher_pw:
     st.error("⚠️ Teacher password not found in Streamlit secrets.")
 
         # Process submission if within word limit
