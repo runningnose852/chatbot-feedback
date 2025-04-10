@@ -47,13 +47,14 @@ with st.form("submission_form"):
 # Calculate word counts
 word_count_answer = len(student_answer.split())
 word_count_topic = len(topic.split())
-max_words_answer = 500  # Word limit for answer
 max_words_topic = 200   # Word limit for topic
+max_words_answer = 500  # Word limit for answer
+
 
 
 # Display word counts
-st.caption(f"Answer word count: {word_count_answer}/{max_words_answer}")
 st.caption(f"Topic word count: {word_count_topic}/{max_words_topic}")
+st.caption(f"Answer word count: {word_count_answer}/{max_words_answer}")
 
 
 # Check word limits during submission
