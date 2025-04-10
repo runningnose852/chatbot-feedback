@@ -74,7 +74,7 @@ Topic:
 {topic}
 Student Answer:
 {student_answer}
-Suggest ways for each aspect to improve, Be kind, supportive, and specific. Use at least 4 direct quotes from the essay where possible, and include improved versions.
+Suggest ways for each aspect to improve, Be kind, supportive, and specific. Give at least 3 Suggested ways with minimum 2 direct quotes from the essay where possible, and include improved versions.
 """
             response = client.chat.completions.create(
                 model="gpt-4",
