@@ -1,5 +1,4 @@
 import streamlit as st
-import openai
 import pandas as pd
 import gspread
 from google.oauth2 import service_account
@@ -63,11 +62,12 @@ if submitted:
         # Save to session
         st.session_state.answers.append({
             "Name": name,
+            "Topic": topic,
             "Answer": student_answer,
             "Feedback": feedback
         })
    
-    # Add a spinner for the Google Sheets operation too
+# Add a spinner for the Google Sheets operation too
 # Check word limit during submission
 if submitted:
     if word_count > max_words:
@@ -76,12 +76,14 @@ if submitted:
         # Display a spinner while generating feedback
         with st.spinner('Generating personalized feedback... Please wait.'):
             prompt = f"""
-You are an assistant teacher helping a student improve their formal argumentative essay.. Evaluate the student's answer based on the rubric below.
+You are talking to the student as an assistant teacher helping a student improve their formal argumentative essay. Use simple English where possible. Evaluate the student's answer based on the rubric below.
 Rubric:
 {rubric_text}
+Topic:
+{topic}
 Student Answer:
 {student_answer}
-Suggest ways to improve, Be kind, supportive, and specific. Use direct quotes from the essay where possible, and include improved versions.
+Suggest ways for each aspect to improve, Be kind, supportive, and specific. Use at least 4 direct quotes from the essay where possible, and include improved versions.
 """
             response = client.chat.completions.create(
                 model="gpt-4",
