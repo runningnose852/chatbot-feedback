@@ -44,15 +44,24 @@ with st.form("submission_form"):
     student_answer = st.text_area("Your Answer")
     submitted = st.form_submit_button("Submit")
 
-word_count = len(student_answer.split())
-max_words = 200  # Changed to 200 words
-# Display word count
-st.caption(f"Word count: {word_count}/{max_words}")
+# Calculate word counts
+word_count_answer = len(student_answer.split())
+word_count_topic = len(topic.split())
+max_words_answer = 500  # Word limit for answer
+max_words_topic = 200   # Word limit for topic
 
-# Check word limit during submission
+
+# Display word counts
+st.caption(f"Answer word count: {word_count_answer}/{max_words_answer}")
+st.caption(f"Topic word count: {word_count_topic}/{max_words_topic}")
+
+
+# Check word limits during submission
 if submitted:
-    if word_count > max_words:
-        st.error(f"Please limit your answer to {max_words} words. Current count: {word_count}")
+    if word_count_answer > max_words_answer:
+        st.error(f"Please limit your answer to {max_words_answer} words. Current count: {word_count_answer}")
+    elif word_count_topic > max_words_topic:
+        st.error(f"Please limit your topic to {max_words_topic} words. Current count: {word_count_topic}")
     elif name and student_answer:  # Only process if we have both name and answer
         # Display a spinner while generating feedback
         with st.spinner('Generating personalized feedback... Please wait.'):
@@ -80,15 +89,15 @@ Suggest ways for each aspect to improve, Be kind, supportive, and specific. Use 
         # Save to session and Google Sheet
         st.session_state.answers.append({
             "Name": name,
-            "Topic": topic,  # Added topic to session state
+            "Topic": topic,
             "Answer": student_answer,
             "Feedback": feedback
         })
         
         # Add a spinner for the Google Sheets operation too
         with st.spinner('Saving your submission...'):
-            sheet.append_row([name, topic, student_answer, feedback])  # Added topic to the sheet row
-
+            sheet.append_row([name, topic, student_answer, feedback])
+            
 # === Teacher View (Hidden Table & Download) ===
 # Divider
 st.markdown("---")
