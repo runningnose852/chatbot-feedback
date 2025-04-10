@@ -31,8 +31,8 @@ with open("rubric.txt", "r", encoding="utf-8") as f:
     rubric_text = f.read()
 
 # === Streamlit UI Setup ===
-st.set_page_config(page_title="📚 Timely Essay Feedback Assistant")
-st.title("📚 Timely Essay Feedback Assistant")
+st.set_page_config(page_title="📚 EssayPal")
+st.title("📚 EssayPal")
 
 # === Session State ===
 if "answers" not in st.session_state:
