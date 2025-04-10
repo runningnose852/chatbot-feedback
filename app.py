@@ -47,7 +47,7 @@ with st.form("submission_form"):
     if submitted and name and student_answer:
         # Generate feedback
         prompt = f"""
-You are an assistant teacher. Evaluate the student's answer based on the rubric below.
+You are an assistant teacher helping a student improve their formal argumentative essay.. Evaluate the student's answer based on the rubric below.
 
 Rubric:
 {rubric_text}
@@ -55,7 +55,7 @@ Rubric:
 Student Answer:
 {student_answer}
 
-Provide specific, constructive feedback.
+Suggest ways to improve, Be kind, supportive, and specific. Use direct quotes from the essay where possible, and include improved versions.
 """
         response = client.chat.completions.create(
             model="gpt-4",
