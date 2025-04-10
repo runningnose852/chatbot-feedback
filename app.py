@@ -109,46 +109,44 @@ Suggest ways to improve, Be kind, supportive, and specific. Use direct quotes fr
         feedback = response.choices[0].message.content
     
     # Show feedback to student (outside the spinner)
-    st.success("✅ Your answer has been submitted!")
-    st.markdown("### 💬 Feedback")
-    st.markdown(feedback)
-    
-    # Save to session and Google Sheet
-    st.session_state.answers.append({
-        "Name": name,
-        "Answer": student_answer,
-        "Feedback": feedback
-    })
-    
-    # Add a spinner for the Google Sheets operation too
-    with st.spinner('Saving your submission...'):
-        sheet.append_row([name, student_answer, feedback])
-# After successful submission
-st.success("✅ Your answer has been submitted!")
-st.balloons()  # Shows a cute balloon animation
-st.markdown("### 💬 Feedback")
-st.markdown(feedback)
+                st.success("✅ Your answer has been submitted!")
+            st.markdown("### 💬 Feedback")
+            st.markdown(feedback)
+            
+            # Save to session and Google Sheet
+            st.session_state.answers.append({
+                "Name": name,
+                "Answer": student_answer,
+                "Feedback": feedback
+            })
+            
+            # Add a spinner for the Google Sheets operation too
+            with st.spinner('Saving your submission...'):
+                sheet.append_row([name, student_answer, feedback])
+
 # === Teacher View (Hidden Table & Download) ===
+# Divider
 st.markdown("---")
 st.subheader("👩‍🏫 Teacher Panel (Password Protected)")
 
-# Always show the password input field
-teacher_pw = st.secrets.get("TEACHER_PASSWORD", None)
-
+# Password input (hidden text)
 with st.expander("🔐 Enter Teacher Password"):
     pw_input = st.text_input("Password", type="password")
-    if pw_input and teacher_pw:
-        if pw_input == teacher_pw:
-            st.success("🔓 Access granted. Viewing teacher panel.")
-
-            if st.session_state.answers:
-                df = pd.DataFrame(st.session_state.answers)
-                st.dataframe(df)
-
-                csv = df.to_csv(index=False).encode("utf-8")
-                st.download_button("⬇️ Download All Feedback", csv, "student_feedback.csv", "text/csv")
-        else:
-            st.error("❌ Incorrect password.")
-    elif pw_input and not teacher_pw:
-        st.error("⚠️ Teacher password not found in Streamlit secrets.")
-
+    
+    if pw_input:
+        try:
+            teacher_pw = st.secrets["TEACHER_PASSWORD"]
+            # Check if password matches
+            if pw_input == teacher_pw:
+                st.success("🔓 Access granted. Viewing teacher panel.")
+                if st.session_state.answers:
+                    df = pd.DataFrame(st.session_state.answers)
+                    st.dataframe(df)
+                    csv = df.to_csv(index=False).encode("utf-8")
+                    st.download_button("⬇️ Download All Feedback", csv, "student_feedback.csv", "text/csv")
+                else:
+                    st.info("No submissions available yet.")
+            else:
+                st.error("❌ Incorrect password.")
+        except KeyError:
+            st.error("⚠️ TEACHER_PASSWORD is not configured in Streamlit secrets.")
